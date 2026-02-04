@@ -2,9 +2,11 @@
 using BepInEx.Logging;
 using CG.Client.PlayerData;
 using CG.Client.UserData;
+using CG.Ship.Object;
 using Client.Player.Interactions;
 using HarmonyLib;
 using ResourceAssets;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using VoidManager;
@@ -50,107 +52,78 @@ namespace VoidCrewCustomAssetExamples
 
             // register GUID.
             MiddleFingerProjectionGUID = Registration.GenerateAndRegisterGUID(MiddleFingerProjectionUniqueString);
-
             BepinPlugin.Log.LogInfo($"Generated Helmet ProjectionGUID {MiddleFingerProjectionGUID}");
 
-            // Create asset def, ref, for later registration.
-            ProjectionCosmeticDef MFprojectionDef = new ProjectionCosmeticDef();
-            ProjectionCosmeticRef MFprojectionRef = new ProjectionCosmeticRef(new ResourceAssetRef(MiddleFingerProjectionGUID, string.Empty));
-            MFprojectionRef._cachedPathGuid = MiddleFingerProjectionGUID;
-            MFprojectionDef.Ref = MFprojectionRef;
+
 
             // Create Projection Cosmetic (The helmet projection 'asset') and load/assign asset.
-            ProjectionCosmetic MFprojectionCosmetic = ScriptableObject.CreateInstance<ProjectionCosmetic>();
-            MFprojectionCosmetic.assetGuid = MiddleFingerProjectionGUID;
-            MFprojectionCosmetic.animationModifiers = new(); // Needs to be an empty, non null list.
-            MFprojectionCosmetic.ProjectionTexture = MiddleFingerProjectionTexture;
+            ProjectionCosmetic MFProjectionCosmetic = ProjectionCosmetics.CreateProjectionAsset(MiddleFingerProjectionGUID, MiddleFingerProjectionTexture);
 
-            ProjectionCosmeticDef AssetDef = VoidManager.Content.ProjectionCosmentics.CreateProjectionAssetDef(MiddleFingerProjectionGUID, projectionCosmetic, contextInfo);
+            // Create ContextInfo.
+            ContextInfo MFContext = ContextInfo.Create(MFProjectionCosmetic.CreateIcon(), "Ancient Greeting", "While researching historic archives, we found extensive usage the balled fist with digitus medius extended. We beleive the wealthy class used this sign when gifting poultry to the poor.");
 
-            // Attempt register asset with cosmetic container.
-            if (ProjectionCosmeticContainer.Instance.TryRegisterAsset(AssetDef))
-            {
-                BepinPlugin.Log.LogInfo("Succesfully registered helmet projection");
-            }
-            else
-            {
-                BepinPlugin.Log.LogError("Failed to register helmet projection");
-            }
+            // Create asset def, ref, for later registration.
+            ProjectionCosmeticDef MFprojectionDef = ProjectionCosmetics.CreateProjectionAssetDef(MiddleFingerProjectionGUID, MFProjectionCosmetic, MFContext);
 
-            // Assign asset to ref.
-            MFprojectionRef.ResourceAsset = MFprojectionCosmetic;
-
-            // Create Context Info
-            MFprojectionDef.ContextInfo = ContextInfo.Create(MFprojectionCosmetic.CreateIcon(), "Ancient Greeting", "While researching historic archives, we found extensive usage the balled fist with digitus medius extended. We beleive the wealthy class used this sign when gifting poultry to the poor.");
-            
             // Attempt register asset with cosmetic container.
             if (ProjectionCosmeticContainer.Instance.TryRegisterAsset(MFprojectionDef))
             {
-                BepinPlugin.Log.LogInfo("Succesfully registered helmet projection");
+                BepinPlugin.Log.LogInfo("Succesfully registered MF helmet projection");
             }
             else
             {
-                BepinPlugin.Log.LogError("Failed to register helmet projection");
+                BepinPlugin.Log.LogError("Failed to register MF helmet projection");
             }
 
             //Unlock code
 
             // Create unlockable options.
-            UnlockOptions UO = new UnlockOptions();
-            UO.UnlockCriteria = UnlockCriteriaType.Always;
+            UnlockOptions UOAlways = new UnlockOptions();
+            UOAlways.UnlockCriteria = UnlockCriteriaType.Always;
 
-            // Create UnlockItem Def/Ref
-            UnlockItemDef MFprojectionUnlockDef = new UnlockItemDef();
-            UnlockItemRef MFprojectionUnlockRef = new UnlockItemRef(MiddleFingerProjectionGUID, string.Empty);
-            MFprojectionUnlockDef.Ref = MFprojectionUnlockRef;
-            MFprojectionUnlockDef.rarity = CG.Ship.Object.RarityType.Common;
-            MFprojectionUnlockDef.unlockOptions = UO;
+            UnlockItemDef MFUID = Unlocks.CreateUnlockItemDef(MiddleFingerProjectionGUID, UOAlways, RarityType.Common);
 
-            UnlockContainer.Instance.TryRegisterAsset(MFprojectionUnlockDef);
+            UnlockContainer.Instance.TryRegisterAsset(MFUID);
 
 
 
-            // register GUID.
+            // Register GUID.
             SnowmanProjectionGUID = Registration.GenerateAndRegisterGUID(SnowmanUniqueString);
 
             BepinPlugin.Log.LogInfo($"Generated Helmet ProjectionGUID {SnowmanProjectionGUID}");
 
-            // Create asset def, ref, for later registration.
-            ProjectionCosmeticDef SnowmanProjectionDef = new ProjectionCosmeticDef();
-            ProjectionCosmeticRef SnowmanprojectionRef = new ProjectionCosmeticRef(new ResourceAssetRef(SnowmanProjectionGUID, string.Empty));
-            SnowmanprojectionRef._cachedPathGuid = SnowmanProjectionGUID;
-            SnowmanProjectionDef.Ref = SnowmanprojectionRef;
+            List<AnimationModifier> SnowmanAnimationModifiers = new() { 
+                new TextureSheetAnimationModifier() { 
+                    columnImages = 2, 
+                    rowImages = 2, targetFPS = 1, 
+                    lingerFrameIndex = 3, 
+                    lingerDuration = 4 
+                } 
+            };
 
             // Create Projection Cosmetic (The helmet projection 'asset') and load/assign asset.
-            ProjectionCosmetic SnowmanProjectionCosmetic = ScriptableObject.CreateInstance<ProjectionCosmetic>();
-            SnowmanProjectionCosmetic.assetGuid = SnowmanProjectionGUID;
-            SnowmanProjectionCosmetic.animationModifiers = new() { new TextureSheetAnimationModifier() { columnImages = 2, rowImages = 2, targetFPS = 1, lingerFrameIndex = 3, lingerDuration = 4,  } }; // Needs to be an empty, non null list.
-            SnowmanProjectionCosmetic.ProjectionTexture = SnowmanProjectionTexture;
-
-            // Assign asset to ref.
-            SnowmanprojectionRef.ResourceAsset = SnowmanProjectionCosmetic;
+            ProjectionCosmetic SnowmanProjectionCosmetic = ProjectionCosmetics.CreateProjectionAsset(SnowmanProjectionGUID, SnowmanProjectionTexture, SnowmanAnimationModifiers);
 
             // Create Context Info
-            SnowmanProjectionDef.ContextInfo = ContextInfo.Create(SnowmanProjectionCosmetic.CreateIcon(), "Snowman", "Building holiday cheer!");
+            ContextInfo SnowmanContext = ContextInfo.Create(SnowmanProjectionCosmetic.CreateIcon(), "Snowman", "Building holiday cheer!");
+
+            // Create asset def, ref, for later registration.
+            ProjectionCosmeticDef SnowmanProjectionDef = ProjectionCosmetics.CreateProjectionAssetDef(SnowmanProjectionGUID, SnowmanProjectionCosmetic, SnowmanContext);
 
             // Attempt register asset with cosmetic container.
             if (ProjectionCosmeticContainer.Instance.TryRegisterAsset(SnowmanProjectionDef))
             {
-                BepinPlugin.Log.LogInfo("Succesfully registered helmet projection");
+                BepinPlugin.Log.LogInfo("Succesfully registered snowman helmet projection");
             }
             else
             {
-                BepinPlugin.Log.LogError("Failed to register helmet projection");
+                BepinPlugin.Log.LogError("Failed to register snowman helmet projection");
             }
 
-            //Unlock code
+            // Snowman Unlock code
 
             // Create UnlockItem Def/Ref
-            UnlockItemDef SnowmanProjectionUnlockDef = new UnlockItemDef();
-            UnlockItemRef SnowmanProjectionUnlockRef = new UnlockItemRef(SnowmanProjectionGUID, string.Empty);
-            SnowmanProjectionUnlockDef.Ref = SnowmanProjectionUnlockRef;
-            SnowmanProjectionUnlockDef.rarity = CG.Ship.Object.RarityType.Common;
-            SnowmanProjectionUnlockDef.unlockOptions = UO;
+            UnlockItemDef SnowmanProjectionUnlockDef = Unlocks.CreateUnlockItemDef(SnowmanProjectionGUID, UOAlways, RarityType.Common);
 
             UnlockContainer.Instance.TryRegisterAsset(SnowmanProjectionUnlockDef);
         }
