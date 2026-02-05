@@ -50,11 +50,11 @@ namespace VoidCrewCustomAssetExamples
             MiddleFingerProjectionTexture = VCCATAssetBundle.LoadAsset<Texture2D>("Assets/Texture2D/MiddleFinger.png");
             SnowmanProjectionTexture = VCCATAssetBundle.LoadAsset<Texture2D>("Assets/Texture2D/Snowman2x2.png");
 
-            // register GUID.
+
+
+            // Register MF GUID.
             MiddleFingerProjectionGUID = Registration.GenerateAndRegisterGUID(MiddleFingerProjectionUniqueString);
             BepinPlugin.Log.LogInfo($"Generated Helmet ProjectionGUID {MiddleFingerProjectionGUID}");
-
-
 
             // Create Projection Cosmetic (The helmet projection 'asset') and load/assign asset.
             ProjectionCosmetic MFProjectionCosmetic = ProjectionCosmetics.CreateProjectionAsset(MiddleFingerProjectionGUID, MiddleFingerProjectionTexture);
@@ -66,16 +66,8 @@ namespace VoidCrewCustomAssetExamples
             ProjectionCosmeticDef MFprojectionDef = ProjectionCosmetics.CreateProjectionAssetDef(MiddleFingerProjectionGUID, MFProjectionCosmetic, MFContext);
 
             // Attempt register asset with cosmetic container.
-            if (ProjectionCosmeticContainer.Instance.TryRegisterAsset(MFprojectionDef))
-            {
-                BepinPlugin.Log.LogInfo("Succesfully registered MF helmet projection");
-            }
-            else
-            {
-                BepinPlugin.Log.LogError("Failed to register MF helmet projection");
-            }
-
-            //Unlock code
+            bool success = ProjectionCosmeticContainer.Instance.TryRegisterAsset(MFprojectionDef);
+            BepinPlugin.Log.LogInfo($"{(success ? "Succesfully registered" : "Failed to register")} MF helmet projection");
 
             // Create unlockable options.
             UnlockOptions UOAlways = new UnlockOptions();
@@ -87,7 +79,7 @@ namespace VoidCrewCustomAssetExamples
 
 
 
-            // Register GUID.
+            // Register Snowman GUID.
             SnowmanProjectionGUID = Registration.GenerateAndRegisterGUID(SnowmanUniqueString);
 
             BepinPlugin.Log.LogInfo($"Generated Helmet ProjectionGUID {SnowmanProjectionGUID}");
@@ -111,16 +103,8 @@ namespace VoidCrewCustomAssetExamples
             ProjectionCosmeticDef SnowmanProjectionDef = ProjectionCosmetics.CreateProjectionAssetDef(SnowmanProjectionGUID, SnowmanProjectionCosmetic, SnowmanContext);
 
             // Attempt register asset with cosmetic container.
-            if (ProjectionCosmeticContainer.Instance.TryRegisterAsset(SnowmanProjectionDef))
-            {
-                BepinPlugin.Log.LogInfo("Succesfully registered snowman helmet projection");
-            }
-            else
-            {
-                BepinPlugin.Log.LogError("Failed to register snowman helmet projection");
-            }
-
-            // Snowman Unlock code
+            success = ProjectionCosmeticContainer.Instance.TryRegisterAsset(SnowmanProjectionDef)
+            BepinPlugin.Log.LogInfo($"{(success ? "Succesfully registered" : "Failed to register")} snowman helmet projection");
 
             // Create UnlockItem Def/Ref
             UnlockItemDef SnowmanProjectionUnlockDef = Unlocks.CreateUnlockItemDef(SnowmanProjectionGUID, UOAlways, RarityType.Common);
